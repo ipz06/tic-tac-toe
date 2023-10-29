@@ -1,12 +1,16 @@
 import {useState} from 'react';
 
-const Player = ({initialName, symbol, isActive}) => {
+const Player = ({initialName, symbol, isActive, onChangeName}) => {
 
     const [playerName, setPlayerName] = useState(initialName);
     const [isEditing, setIsEditing] = useState(false);
 
     const handleClickEditing = () => {
         setIsEditing(prev => !prev);
+
+        if (isEditing) {
+            onChangeName(symbol, playerName);
+        };
     };
 
     const handleChange = (event) => {
@@ -20,9 +24,7 @@ const Player = ({initialName, symbol, isActive}) => {
     if (isEditing) {
         editablePlayerName = <input type='text' required value={playerName} onChange={handleChange}/>;
         btnCaption = 'Save'; 
-    }
-
-    
+    };
 
     return (
         <li className={isActive ? 'active' : undefined}>
