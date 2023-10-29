@@ -1,6 +1,7 @@
 import GameBoard from "./components/GameBoard"
 import Log from "./components/Log";
 import Player from "./components/Player"
+import { WINNING_COMBINATIONS } from "./winning-combination";
 
 import { useState } from "react";
 
@@ -14,11 +15,44 @@ const deriveActivePlayer = (gameTurn) => {
   return currentPlayer;
 };
 
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
 const App = () => {
   const [gameTurn , setGameTurn] = useState([]);
+  // const [hasWinner, setHasWinner] = useState(false);
   // const [activePlayer, setActivePlayer] = useState('X');
 
   const activePlayer = deriveActivePlayer(gameTurn);
+
+  let gameBoard = initialGameBoard;
+
+  for (const turn of gameTurn) {
+      const {square, player} = turn;
+      const {row, col} = square;
+
+      gameBoard[row][col] = player;
+  }
+
+  let winner;
+
+  for (const combinations of WINNING_COMBINATIONS) {
+    const firstSquareSymbol = gameBoard[combinations[0].row][combinations[0].column];
+    const secondSquareSymbol = gameBoard[combinations[1].row][combinations[1].column];
+    const thirdSquareSymbol = gameBoard[combinations[2].row][combinations[2].column];
+
+    if (
+      firstSquareSymbol && 
+      firstSquareSymbol === secondSquareSymbol && 
+      firstSquareSymbol === thirdSquareSymbol
+      ) {
+      winner = firstSquareSymbol;
+    };
+
+  }
  
   const handleSelectSquare = (rowIndex, colIndex) => {
     // setActivePlayer(currentActivePlayer => currentActivePlayer === 'X' ? 'O' : 'X');
@@ -51,9 +85,10 @@ const App = () => {
             isActive={activePlayer === 'O'}
           />
         </ol>
+        {winner && <p>You won, {winner}!</p>}
         <GameBoard 
           onSelectSquare={handleSelectSquare} 
-          turns={gameTurn}
+          board={gameBoard}
         />
       </div>
       <Log turns={gameTurn}/>
